@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pop-Up Showdown</title>
-<meta name="description" content="A 4-hour craft fair business game for student teams: pick a booth, craft, price and promotion and compete on profit.">
+<meta name="description" content="A four-round craft fair business game for Grade 9–10 teams: start with $500, choose product, location, price, advertising and inventory, and build the most valuable business.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Figtree:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one host screen for a projector — sticky scoreboard header, then the current phase (setup, decide, results, final) */
+/* Layout: one host screen for a projector — sticky header with round pips, then the current phase (setup, decide, results, final) */
 :root {
   --bg: #EEF1F7;
   --surface: #FFFFFF;
@@ -46,7 +46,7 @@ html { color-scheme: light; }
 body { margin: 0; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ink); }
-.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ink); color: var(--bg); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 12px max(16px, env(safe-area-inset-left, 0px)); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .brand { font-family: var(--font-display); font-size: clamp(20px, 3vw, 28px); letter-spacing: 1px; line-height: 1; }
 .brand span { color: var(--tag); }
@@ -59,82 +59,94 @@ h1, h2, h3 { margin: 0; text-wrap: balance; line-height: 1.15; }
 h2 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; }
 h3 { font-size: 18px; font-weight: 800; }
 p { margin: 0; }
+ul { margin: 0; padding-left: 18px; }
 .muted { color: var(--muted); }
 .label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; }
 .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 960px) { .grid2 { grid-template-columns: 1fr; } }
 button { font: inherit; cursor: pointer; border-radius: 10px; border: 2px solid var(--ink); background: transparent; color: var(--ink); padding: 10px 18px; font-weight: 700; }
 button:hover { background: var(--surface-2); }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-size: 18px; padding: 14px 26px; }
 button.primary:hover { filter: brightness(1.07); background: var(--accent); }
+button:disabled, button.primary:disabled { opacity: .45; cursor: not-allowed; filter: none; }
 button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--tag); outline-offset: 2px; }
 button.small { padding: 6px 12px; font-size: 14px; }
 button.chosen { background: var(--ink); color: var(--bg); }
-.stock-cell { min-width: 140px; }
-.stock-cell input { font-family: var(--font-num); font-size: 18px; max-width: 120px; }
-.stock-cell .note { white-space: nowrap; margin-top: 4px; }
-select, input[type="text"], input[type="number"] { font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
+select, input[type="text"] { font: inherit; color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0; }
 /* Hero / setup */
 .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: center; }
 @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
-.hero h1 { font-family: var(--font-display); font-size: clamp(36px, 6vw, 72px); line-height: .95; font-weight: 400; }
+.hero h1 { font-family: var(--font-display); font-size: clamp(36px, 6vw, 68px); line-height: .98; font-weight: 400; }
 .hero h1 em { font-style: normal; color: var(--accent); }
 .lede { font-size: 19px; max-width: 58ch; }
+.facts-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; display: grid; }
+.fact b { font-family: var(--font-num); font-size: 22px; font-weight: 500; }
 .steps { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; counter-reset: s; }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; }
 .steps li::before { content: counter(s); font-family: var(--font-display); width: 36px; height: 36px; border-radius: 50%; background: var(--tag); color: var(--tag-ink); display: grid; place-items: center; font-size: 16px; }
 .names { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 .names label { display: grid; gap: 4px; }
-/* Market news tag */
+/* News tag */
 .tag { position: relative; background: var(--tag); color: var(--tag-ink); border-radius: 6px 22px 22px 6px; padding: 22px 26px 22px 56px; display: grid; gap: 8px; }
 .tag::before { content: ""; position: absolute; left: 20px; top: 50%; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px rgba(27,31,59,.35); }
 .tag .label { color: rgba(27,31,59,.75); }
 .tag h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(24px, 3.4vw, 38px); }
 .tag p { font-size: 18px; font-weight: 500; }
-.mods { display: flex; flex-wrap: wrap; gap: 8px; }
-.mod { font-family: var(--font-num); font-size: 14px; background: rgba(27,31,59,.1); border-radius: 999px; padding: 4px 12px; }
 /* Timer */
 .timer { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .clock { font-family: var(--font-num); font-size: clamp(40px, 6vw, 64px); font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; }
 .clock.low { color: var(--loss); }
-/* Decision table */
+/* Tables */
 .scroll { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
-th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); white-space: nowrap; }
-th .p { display: block; font-family: var(--font-display); letter-spacing: 0; text-transform: none; font-size: 13px; color: var(--accent); }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); white-space: nowrap; vertical-align: bottom; }
+th .n { display: block; font-family: var(--font-display); letter-spacing: 0; text-transform: none; font-size: 13px; color: var(--accent); }
 td.team { font-weight: 800; white-space: nowrap; }
-.decide td { min-width: 120px; }
+.decide td { min-width: 128px; }
 .decide td.team { min-width: 0; }
 .num { font-family: var(--font-num); text-align: right; white-space: nowrap; }
 th.num { text-align: right; }
 .gain { color: var(--gain); }
 .loss { color: var(--loss); }
 .note { font-size: 14px; color: var(--muted); }
+.wallet { font-size: 14px; display: grid; gap: 2px; font-weight: 600; }
+.wallet .num { text-align: left; }
+.status { font-size: 14px; display: grid; gap: 2px; min-width: 150px; }
+.status .err { color: var(--loss); font-weight: 700; }
+.status .ok { color: var(--gain); font-weight: 700; }
+.why { font-size: 14px; color: var(--muted); display: grid; gap: 2px; min-width: 220px; }
 .win-row { background: color-mix(in srgb, var(--tag) 22%, transparent); }
+/* Round winner banner */
+.banner { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 18px 22px; }
+.banner .label { color: var(--tag); }
+.banner .big { font-family: var(--font-display); font-size: clamp(24px, 3.4vw, 36px); line-height: 1.05; }
+.banner .num { color: var(--tag); font-size: 22px; text-align: left; }
 /* Guide */
-.guide { display: grid; gap: 16px; }
-.guide h3 { display: flex; gap: 8px; align-items: baseline; }
-.guide h3 .p { font-family: var(--font-display); font-weight: 400; color: var(--accent); font-size: 15px; }
-.facts { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-size: 15px; }
-.facts .num { color: var(--ink); }
+.guide { display: grid; gap: 18px; }
+.guide h3 .n { font-family: var(--font-display); font-weight: 400; color: var(--accent); font-size: 15px; margin-right: 6px; }
+.guide table { font-size: 15px; }
+.guide th, .guide td { padding: 6px 6px; }
+.rules { display: grid; gap: 6px; font-size: 15px; padding-left: 18px; }
 /* Leaderboard */
 .board { display: grid; gap: 10px; }
-.bar-row { display: grid; grid-template-columns: 28px minmax(90px, 160px) minmax(0, 1fr) 96px; gap: 12px; align-items: center; }
+.bar-row { display: grid; grid-template-columns: 28px minmax(90px, 160px) minmax(0, 1fr) 110px; gap: 12px; align-items: center; }
 .rank { font-family: var(--font-display); font-size: 18px; }
 .track { height: 26px; background: var(--surface-2); border-radius: 6px; overflow: hidden; }
 .fill { height: 100%; background: var(--accent); border-radius: 6px; transition: width .8s ease; }
 .bar-row.lead .fill { background: var(--tag); }
+.bar-sub { grid-column: 3 / 5; font-size: 13px; color: var(--muted); margin-top: -6px; }
 @media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+@media (max-width: 560px) { .bar-row { grid-template-columns: 24px minmax(0, 1fr) 96px; } .bar-row .track { grid-column: 1 / -1; grid-row: 2; } .bar-sub { grid-column: 1 / -1; margin-top: 0; } }
 .podium { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
 .place { border-radius: 14px; padding: 22px; background: var(--surface); border: 1px solid var(--line); display: grid; gap: 6px; }
 .place.first { background: var(--tag); color: var(--tag-ink); border-color: var(--tag); }
 .place .big { font-family: var(--font-display); font-size: 34px; line-height: 1; }
 .place .label { color: inherit; opacity: .75; }
-.actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
-.confirm { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
 </style>
 </head>
 <body>
@@ -147,95 +159,122 @@ th.num { text-align: right; }
 </div>
 
 <script>
-const LOCS = {
-  entrance: { name: "Downstairs entrance",     short: "Entrance",   shoppers: 150, rent: 30, aff: { candles: 0.8, ornaments: 1.0, toques: 0.7 } },
-  front:    { name: "Auditorium: Front",       short: "Front",      shoppers: 110, rent: 25, aff: { candles: 1.2, ornaments: 1.0, toques: 1.0 } },
-  left:     { name: "Auditorium: Left side",   short: "Left side",  shoppers: 80,  rent: 20, aff: { candles: 1.0, ornaments: 1.3, toques: 0.8 } },
-  right:    { name: "Auditorium: Right side",  short: "Right side", shoppers: 70,  rent: 15, aff: { candles: 0.9, ornaments: 0.9, toques: 1.1 } },
-  back:     { name: "Auditorium: Back",        short: "Back",       shoppers: 40,  rent: 10, aff: { candles: 1.2, ornaments: 1.1, toques: 1.3 } }
-};
+/* ---------- Game settings (edit these to change the game) ---------- */
+const START_CASH = 500;
+const ROUND_SECONDS = 300;
 const PRODS = {
-  candles:   { name: "Soy candles",    cost: 4.00, prices: [8, 10, 12, 15], best: "Front and Back" },
-  ornaments: { name: "Ornaments",      cost: 2.00, prices: [4, 5, 6, 8],    best: "Left side, by the coffee" },
-  toques:    { name: "Knitted toques", cost: 6.00, prices: [12, 15, 18, 22], best: "Back and Right side" }
+  candles:   { name: "Candles",        unit: "candles",   cost: 4, prices: [8, 10, 13],  appeal: 1.0 },
+  ornaments: { name: "Ornaments",      unit: "ornaments", cost: 2, prices: [4, 5, 7],    appeal: 1.1 },
+  toques:    { name: "Knitted toques", unit: "toques",    cost: 6, prices: [12, 15, 19], appeal: 0.9 }
 };
-const TIERS = ["Low", "Fair", "High", "Premium"];
-const BUY = [0.30, 0.24, 0.18, 0.11];
-const PROMOS = {
-  none:    { name: "None",                  cost: 0, mult: 1,    give: 0 },
-  sign:    { name: "Display sign ($5)",     cost: 5, mult: 1.15, give: 0 },
-  samples: { name: "Free samples (2 units)", cost: 0, mult: 1.35, give: 2 }
+const LOCS = {
+  entrance: { name: "Main entrance", rent: 30, shoppers: 140, mult: 0.9,  note: "Busiest spot, but shoppers have only just arrived" },
+  middle:   { name: "Middle",        rent: 20, shoppers: 100, mult: 1.0,  note: "A steady crowd" },
+  back:     { name: "Back",          rent: 10, shoppers: 60,  mult: 1.25, note: "Quietest, but the shoppers who get there look carefully" }
 };
-const STOCK_MAX = 200;
+const TIERS = ["Low", "Medium", "High"];
+const BUY = [0.30, 0.22, 0.14];             /* hidden from students: share of shoppers who buy at each price level */
+const ADS = {
+  none:    { name: "None",                     cost: 0, mult: 1,   give: 0, effect: "No extra shoppers" },
+  sign:    { name: "Sign ($5)",                cost: 5, mult: 1.2, give: 0, effect: "Brings in some extra shoppers" },
+  samples: { name: "Free samples (2 products)", cost: 0, mult: 1.4, give: 2, effect: "Brings in the most extra shoppers. You give away 2 items from your stock." }
+};
+const UNITS = [0, 20, 40, 60];
 const EVENTS = [
-  { title: "Doors open at 10:00", text: "A normal first hour at the Watson Art Center. Use it to learn how the fair works.", traffic: {}, demand: {}, mods: ["No changes"] },
-  { title: "First snowfall of the year", text: "Snow starts falling outside, and suddenly everyone is thinking about warm hats.", traffic: {}, demand: { toques: 1.5 }, mods: ["Knitted toques demand +50%"] },
-  { title: "Lunch rush at the coffee table", text: "Shoppers crowd the coffee and treats table on the left side of the auditorium.", traffic: { left: 1.6 }, demand: { candles: 0.8 }, mods: ["Left side shoppers +60%", "Candles demand −20%"] },
-  { title: "Last-minute gift hunters", text: "In the final hour, shoppers rush upstairs looking for small gifts.", traffic: { front: 1.4 }, demand: { ornaments: 1.4 }, mods: ["Front shoppers +40%", "Ornaments demand +40%"] }
+  { title: "Opening Day", text: "Normal shopping conditions. See how your decisions affect your sales.", traffic: 1, demand: {} },
+  { title: "First Snowfall", text: "Snow starts falling outside, and shoppers want something warm.", traffic: 1, demand: { toques: 1.7 }, why: { toques: "The snowfall brought extra toque buyers." } },
+  { title: "Social Media Craze", text: "A video of handmade ornaments goes viral. Ornaments are the most popular product today.", traffic: 1, demand: { ornaments: 2.0 }, why: { ornaments: "The ornament craze brought extra buyers." } },
+  { title: "Last-Minute Shopping Rush", text: "More customers arrive. This is your final chance to boost your profit.", traffic: 1.5, demand: {}, whyAll: "The shopping rush brought extra shoppers." }
 ];
 const ROUNDS = EVENTS.length;
-const DEFAULT_CHOICE = { loc: "front", prod: "candles", price: 1, deal: false, promo: "none", stock: 40 };
+const DEFAULT_CHOICE = { prod: "candles", loc: "middle", price: 1, ad: "none", units: 20 };
 const DEFAULT_NAMES = ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6"];
+const VERSION = 3;
 
-const money = n => (n < 0 ? "−$" : "$") + Math.abs(n).toFixed(2);
+const money = n => (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-CA");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const emptyStock = () => ({ candles: 0, ornaments: 0, toques: 0 });
+const stockValue = st => Object.keys(PRODS).reduce((s, k) => s + st[k] * PRODS[k].cost, 0);
+const stockText = st => {
+  const parts = Object.keys(PRODS).filter(k => st[k] > 0).map(k => `${st[k]} ${PRODS[k].unit}`);
+  return parts.length ? parts.join(", ") : "none";
+};
 
 function fresh() {
-  return { v: 2, phase: "setup", teamCount: 6, names: DEFAULT_NAMES.slice(), teams: [], round: 0, choices: [], results: [], timerSec: 180 };
+  return { v: VERSION, phase: "setup", teamCount: 6, names: DEFAULT_NAMES.slice(), teams: [], round: 0, choices: [], results: [], before: null };
 }
 let S;
-function save() { try { localStorage.setItem("popup-showdown-craft", JSON.stringify(S)); } catch (e) {} }
-function load() { try { const t = localStorage.getItem("popup-showdown-craft"); return t ? JSON.parse(t) : null; } catch (e) { return null; } }
+function save() { try { localStorage.setItem("popup-showdown-v3", JSON.stringify(S)); } catch (e) {} }
+function load() { try { const t = localStorage.getItem("popup-showdown-v3"); return t ? JSON.parse(t) : null; } catch (e) { return null; } }
+
+/* ---------- Budget check ---------- */
+function plan(i) {
+  const t = S.teams[i], c = S.choices[i], p = PRODS[c.prod];
+  const buy = c.units * p.cost, rent = LOCS[c.loc].rent, ad = ADS[c.ad].cost;
+  const spend = buy + rent + ad;
+  const onHand = t.stock[c.prod] + c.units;
+  let err = "";
+  if (spend > t.cash) err = `Costs ${money(spend)}, but you only have ${money(t.cash)}.`;
+  else if (ADS[c.ad].give > onHand) err = `Free samples need at least 2 ${p.unit} in stock.`;
+  return { spend, buy, rent, ad, onHand, err };
+}
 
 /* ---------- Market model ---------- */
 function attraction(c, ev) {
-  const base = BUY[c.price] * LOCS[c.loc].aff[c.prod] * (ev.demand[c.prod] || 1) * PROMOS[c.promo].mult * (c.deal ? 1.1 : 1);
-  return Math.min(0.9, base);
+  const w = BUY[c.price] * PRODS[c.prod].appeal * (ev.demand[c.prod] || 1) * LOCS[c.loc].mult * ADS[c.ad].mult;
+  return Math.min(0.9, w);
 }
-function runRound(roundIdx, choices) {
-  const ev = EVENTS[roundIdx];
-  const w = choices.map(c => attraction(c, ev));
+function runRound() {
+  const ev = EVENTS[S.round];
+  const ch = S.choices;
+  const w = ch.map(c => attraction(c, ev));
   const byLoc = {};
-  choices.forEach((c, i) => (byLoc[c.loc] = byLoc[c.loc] || []).push(i));
-  return choices.map((c, i) => {
+  ch.forEach((c, i) => (byLoc[c.loc] = byLoc[c.loc] || []).push(i));
+  return ch.map((c, i) => {
+    const t = S.teams[i], p = PRODS[c.prod], pl = plan(i);
     const group = byLoc[c.loc];
-    const shoppers = Math.round(LOCS[c.loc].shoppers * (ev.traffic[c.loc] || 1));
-    const pAny = 1 - group.reduce((p, j) => p * (1 - w[j]), 1);
+    const shoppers = Math.round(LOCS[c.loc].shoppers * ev.traffic);
+    const pAny = 1 - group.reduce((q, j) => q * (1 - w[j]), 1);
     const sumW = group.reduce((s, j) => s + w[j], 0);
-    const customers = Math.round(shoppers * pAny * (w[i] / sumW));
-    const promo = PROMOS[c.promo];
-    const cost = PRODS[c.prod].cost;
-    const available = Math.max(0, c.stock - promo.give);
-    const wanted = customers * (c.deal ? 2 : 1);
+    const wanted = sumW > 0 ? Math.round(shoppers * pAny * (w[i] / sumW)) : 0;
+    const give = ADS[c.ad].give;
+    const available = Math.max(0, t.stock[c.prod] + c.units - give);
     const sold = Math.min(wanted, available);
-    const unitPrice = PRODS[c.prod].prices[c.price] * (c.deal ? 0.8 : 1);
-    const revenue = sold * unitPrice;
-    const stockCost = c.stock * cost;
-    const rent = LOCS[c.loc].rent;
-    const unsold = available - sold;
-    const buyback = unsold * cost / 2;
-    const profit = revenue - stockCost - promo.cost - rent + buyback;
-    const notes = [];
-    if (group.length > 1) notes.push(`Shared the area with ${group.length - 1} other booth${group.length > 2 ? "s" : ""}`);
-    if (wanted > available) notes.push(`Sold out: missed ${wanted - available} sales`);
-    if (unsold > 0) notes.push(`${unsold} unsold, valued at half cost`);
-    return { shoppers, customers, sold, revenue, stockCost, promoCost: promo.cost + rent, buyback, profit, notes };
+    const price = p.prices[c.price];
+    const revenue = sold * price;
+    const expenses = pl.spend;
+    const profit = revenue - expenses;
+    /* update the team's books */
+    t.cash = t.cash - expenses + revenue;
+    t.stock[c.prod] = available - sold;
+    /* plain-language reasons */
+    const why = [];
+    if (ev.why && ev.why[c.prod]) why.push(ev.why[c.prod]);
+    if (ev.whyAll) why.push(ev.whyAll);
+    if (group.length > 1) why.push(`You shared the ${LOCS[c.loc].name.toLowerCase()} with ${group.length - 1} other team${group.length > 2 ? "s" : ""}, so shoppers were split.`);
+    if (c.price === 0) why.push("Your low price attracted more buyers but earned less per item.");
+    if (c.price === 2) why.push("Your high price earned more per item, but fewer people bought.");
+    if (c.ad === "sign") why.push("Your sign brought in extra shoppers.");
+    if (c.ad === "samples") why.push(`Free samples brought in the most extra shoppers (2 ${p.unit} given away).`);
+    if (wanted > available) why.push(`Sold out! About ${wanted - available} more shoppers wanted to buy.`);
+    if (t.stock[c.prod] > 0) why.push(`${t.stock[c.prod]} ${p.unit} left over, ready for next round.`);
+    if (sold === 0 && available === 0) why.push(`You had no ${p.unit} to sell.`);
+    return { prod: c.prod, loc: c.loc, price, ad: c.ad, units: c.units, sold, revenue, buy: pl.buy, rent: pl.rent, adCost: pl.ad, expenses, profit, why, cashAfter: t.cash, valueAfter: t.cash + stockValue(t.stock) };
   });
-}
-function totals() {
-  return S.teams.map((t, i) => S.results.reduce((s, r) => s + r[i].profit, 0));
 }
 
 /* ---------- Rendering ---------- */
 const app = document.getElementById("app");
-let timerId = null, timeLeft = 180, confirmReset = false;
+let timerId = null, timeLeft = ROUND_SECONDS, confirmReset = false;
 
 function renderPips() {
   const el = document.getElementById("pips");
-  if (S.phase === "setup") { el.innerHTML = `<span>${ROUNDS} hours</span>`; return; }
-  let h = "<span>Hour</span>";
+  if (S.phase === "setup") { el.innerHTML = `<span>${ROUNDS} rounds</span>`; return; }
+  let h = "<span>Round</span>";
   for (let r = 0; r < ROUNDS; r++) {
-    const cls = S.phase !== "final" && r === S.round ? "on" : (r < S.round || S.phase === "final" || (r === S.round && S.phase === "results") ? "done" : "");
+    const done = r < S.round || S.phase === "final" || (r === S.round && S.phase === "results");
+    const cls = S.phase === "round" && r === S.round ? "on" : (done ? "done" : "");
     h += `<span class="pip ${cls}">${r + 1}</span>`;
   }
   el.innerHTML = h;
@@ -260,16 +299,21 @@ function renderSetup() {
   <section class="hero">
     <div style="display:grid;gap:18px">
       <p class="label">Business Skills Competition · Craft fair edition</p>
-      <h1>Run the <em>best</em> booth at the Watson Art Center craft fair</h1>
-      <p class="lede">The fair runs four hours, and each hour brings a surprise. Every hour, each team picks its booth (Place), what it sells (Product), its prices (Price) and how it draws shoppers in (Promotion). The shoppers decide who sells. Most total profit wins.</p>
+      <h1>Run the <em>best</em> booth at the holiday craft fair</h1>
+      <p class="lede">Each team starts with $500. Over four rounds, you choose what to sell, where to set up, what to charge, how to advertise and how much stock to buy. The team with the highest business value at the end wins.</p>
+      <div class="facts-row">
+        <div class="fact"><span class="label">Starting cash</span><b>${money(START_CASH)}</b></div>
+        <div class="fact"><span class="label">Rounds</span><b>${ROUNDS}</b></div>
+        <div class="fact"><span class="label">Per round</span><b>${ROUND_SECONDS / 60} min</b></div>
+      </div>
     </div>
     <div class="panel">
-      <h3 style="margin-bottom:14px">How to run it (about 18 minutes)</h3>
+      <h3 style="margin-bottom:14px">How to run it (30–40 minutes)</h3>
       <ol class="steps">
-        <li><span>Read the Fair News out loud. Teams get 3 minutes to decide.</span></li>
-        <li><span>Each team calls out its choices. Enter them in the table.</span></li>
-        <li><span>Press <b>Open the booths</b> and reveal the results.</span></li>
-        <li><span>Repeat for all 4 hours. Highest total profit wins the campus tour.</span></li>
+        <li><span>Read the Fair News out loud. Teams get 5 minutes to make their five decisions.</span></li>
+        <li><span>Each team calls out its choices. Enter them in the table. The game blocks any team that tries to spend more than it has.</span></li>
+        <li><span>Press <b>Open the booths</b>. Reveal the most profitable team and each team’s results.</span></li>
+        <li><span>Teams adjust their strategy and play the next round. After round 4, the highest business value wins.</span></li>
       </ol>
     </div>
   </section>
@@ -281,66 +325,74 @@ function renderSetup() {
   app.querySelectorAll("[data-count]").forEach(b => b.onclick = () => { S.teamCount = +b.dataset.count; render(); });
   app.querySelectorAll("[data-name]").forEach(inp => inp.oninput = () => { S.names[+inp.dataset.name] = inp.value; save(); });
   document.getElementById("start").onclick = () => {
-    S.teams = S.names.slice(0, S.teamCount).map((n, i) => (n.trim() || `Team ${i + 1}`));
+    S.teams = S.names.slice(0, S.teamCount).map((n, i) => ({ name: n.trim() || `Team ${i + 1}`, cash: START_CASH, stock: emptyStock() }));
     S.round = 0; S.results = [];
     S.choices = S.teams.map(() => ({ ...DEFAULT_CHOICE }));
-    S.phase = "round"; timeLeft = S.timerSec; render();
+    S.phase = "round"; timeLeft = ROUND_SECONDS; render();
   };
 }
 
 function guideHTML() {
-  const locRows = Object.values(LOCS).map(l => `<span>${l.name}</span><span class="num">${l.shoppers} · ${money(l.rent).replace(".00", "")}</span>`).join("");
-  const prodRows = Object.values(PRODS).map(p => `<span>${p.name} <span class="muted">· sells best: ${p.best}</span></span><span class="num">${money(p.cost)}</span>`).join("");
-  const priceHead = `<span></span>${Object.values(PRODS).map(p => `<span class="num label">${p.name.split(" ").pop()}</span>`).join("")}`;
-  const priceRows = TIERS.map((t, k) => `<span>${t} <span class="muted">(${Math.round(BUY[k] * 100)}% buy)</span></span>${Object.values(PRODS).map(p => `<span class="num">$${p.prices[k]}</span>`).join("")}`).join("");
+  const prodRows = Object.values(PRODS).map(p => `<tr><td>${p.name}</td><td class="num">${money(p.cost)}</td>${p.prices.map(x => `<td class="num">${money(x)}</td>`).join("")}</tr>`).join("");
+  const locRows = Object.values(LOCS).map(l => `<tr><td><b>${l.name}</b><div class="note">${l.note}</div></td><td class="num">${money(l.rent)}</td></tr>`).join("");
+  const adRows = Object.values(ADS).map(a => `<tr><td><b>${a.name}</b><div class="note">${a.effect}</div></td></tr>`).join("");
   return `
   <aside class="panel guide" aria-label="Fair guide">
     <h3>Fair guide</h3>
-    <div><h3><span class="p">Place</span><span class="label">Shoppers per hour · booth rent</span></h3>
-      <div class="facts">${locRows}</div>
-      <p class="note">Booths in the same area share its shoppers. The more attractive booth wins more of them.</p></div>
-    <div><h3><span class="p">Product</span><span class="label">Cost per unit</span></h3><div class="facts">${prodRows}</div></div>
-    <div><h3><span class="p">Price</span><span class="label">Price levels</span></h3>
-      <div class="facts" style="grid-template-columns:1fr auto auto auto">${priceHead}${priceRows}</div>
-      <p class="note">Gift set (2-for): 10% more buyers, each buys 2 units at 20% off.</p></div>
-    <div><h3><span class="p">Promotion</span></h3>
-      <div class="facts"><span>Display sign</span><span class="num">$5 · +15% buyers</span><span>Free samples</span><span class="num">2 units · +35% buyers</span></div></div>
-    <div><h3><span class="label">Stock</span></h3><p class="note">Choose how many units to make (0 to 200). You pay for every unit you make and can't sell more than you made. Unsold units count at half their cost.</p></div>
+    <div><h3><span class="n">1 + 3</span>Products and prices</h3>
+      <div class="scroll"><table><thead><tr><th>Product</th><th class="num">Cost each</th><th class="num">Low</th><th class="num">Medium</th><th class="num">High</th></tr></thead><tbody>${prodRows}</tbody></table></div>
+      <p class="note">Higher prices earn more per item, but fewer shoppers buy.</p></div>
+    <div><h3><span class="n">2</span>Locations</h3>
+      <table><thead><tr><th>Booth</th><th class="num">Rent</th></tr></thead><tbody>${locRows}</tbody></table>
+      <p class="note">Teams at the same location split its shoppers.</p></div>
+    <div><h3><span class="n">4</span>Advertising</h3><table><tbody>${adRows}</tbody></table></div>
+    <div><h3><span class="n">5</span>Rules for money and stock</h3>
+      <ul class="rules">
+        <li>You pay for stock when you buy it: 0, 20, 40 or 60 units.</li>
+        <li>You can’t spend more cash than you have.</li>
+        <li>Unsold items stay in your stock for the next round.</li>
+        <li>Winner: highest cash + leftover stock (at cost).</li>
+      </ul></div>
   </aside>`;
 }
 
-function stockCostText(c) { return `units · cost ${money(c.stock * PRODS[c.prod].cost)}`; }
-function drawStockCost(i) { const el = document.getElementById(`c-${i}-cost`); if (el) el.textContent = stockCostText(S.choices[i]); }
-function priceOpts(c) { return TIERS.map((t, k) => opt(k, `${t} · $${PRODS[c.prod].prices[k]}`, c.price)).join(""); }
 function opt(val, label, cur) { return `<option value="${val}" ${String(val) === String(cur) ? "selected" : ""}>${label}</option>`; }
+function priceOpts(c) { return TIERS.map((t, k) => opt(k, `${t} · ${money(PRODS[c.prod].prices[k])}`, c.price)).join(""); }
+function unitOpts(c) { return UNITS.map(u => opt(u, u === 0 ? "Buy none" : `Buy ${u} · ${money(u * PRODS[c.prod].cost)}`, c.units)).join(""); }
+function walletHTML(i) {
+  const t = S.teams[i];
+  return `<span>Cash <span class="num">${money(t.cash)}</span></span><span class="note">Stock: ${stockText(t.stock)}</span>`;
+}
+function statusHTML(i) {
+  const pl = plan(i), t = S.teams[i];
+  if (pl.err) return `<span class="err">${esc(pl.err)}</span>`;
+  return `<span>Spend <span class="num">${money(pl.spend)}</span></span><span class="ok">Cash left ${money(t.cash - pl.spend)}</span><span class="note">${pl.onHand} ${PRODS[S.choices[i].prod].unit} to sell</span>`;
+}
 
 function renderRound() {
   const ev = EVENTS[S.round];
   const rows = S.teams.map((t, i) => {
     const c = S.choices[i];
-    const loc = Object.entries(LOCS).map(([k, l]) => opt(k, l.name, c.loc)).join("");
     const prod = Object.entries(PRODS).map(([k, p]) => opt(k, p.name, c.prod)).join("");
-    const price = priceOpts(c);
-    const deal = opt("no", "Singles", c.deal ? "yes" : "no") + opt("yes", "Gift set (2-for)", c.deal ? "yes" : "no");
-    const promo = Object.entries(PROMOS).map(([k, p]) => opt(k, p.name, c.promo)).join("");
+    const loc = Object.entries(LOCS).map(([k, l]) => opt(k, `${l.name} · ${money(l.rent)}`, c.loc)).join("");
+    const ad = Object.entries(ADS).map(([k, a]) => opt(k, a.name, c.ad)).join("");
     return `<tr>
-      <td class="team">${esc(t)}</td>
-      <td><select id="c-${i}-loc" data-i="${i}" data-k="loc" aria-label="${esc(t)} place">${loc}</select></td>
-      <td><select id="c-${i}-prod" data-i="${i}" data-k="prod" aria-label="${esc(t)} product">${prod}</select></td>
-      <td><select id="c-${i}-price" data-i="${i}" data-k="price" aria-label="${esc(t)} price">${price}</select></td>
-      <td><select id="c-${i}-deal" data-i="${i}" data-k="deal" aria-label="${esc(t)} deal">${deal}</select></td>
-      <td><select id="c-${i}-promo" data-i="${i}" data-k="promo" aria-label="${esc(t)} promotion">${promo}</select></td>
-      <td class="stock-cell"><input type="number" id="c-${i}-stock" data-i="${i}" data-k="stock" min="0" max="${STOCK_MAX}" step="1" inputmode="numeric" value="${c.stock}" aria-label="${esc(t)} units to make" aria-describedby="c-${i}-cost"><div class="note" id="c-${i}-cost">${stockCostText(c)}</div></td>
+      <td class="team">${esc(t.name)}<div class="wallet" id="w-${i}">${walletHTML(i)}</div></td>
+      <td><select id="c-${i}-prod" data-i="${i}" data-k="prod" aria-label="${esc(t.name)} product">${prod}</select></td>
+      <td><select id="c-${i}-loc" data-i="${i}" data-k="loc" aria-label="${esc(t.name)} location">${loc}</select></td>
+      <td><select id="c-${i}-price" data-i="${i}" data-k="price" aria-label="${esc(t.name)} price">${priceOpts(c)}</select></td>
+      <td><select id="c-${i}-ad" data-i="${i}" data-k="ad" aria-label="${esc(t.name)} advertising">${ad}</select></td>
+      <td><select id="c-${i}-units" data-i="${i}" data-k="units" aria-label="${esc(t.name)} inventory">${unitOpts(c)}</select></td>
+      <td><div class="status" id="s-${i}" aria-live="polite">${statusHTML(i)}</div></td>
     </tr>`;
   }).join("");
   app.innerHTML = `
   <div class="grid2">
     <div style="display:grid;gap:24px;min-width:0">
-      <section class="tag" aria-label="Market news">
-        <span class="label">Hour ${S.round + 1} fair news</span>
+      <section class="tag" aria-label="Fair news">
+        <span class="label">Round ${S.round + 1} fair news</span>
         <h2>${esc(ev.title)}</h2>
         <p>${esc(ev.text)}</p>
-        <div class="mods">${ev.mods.map(m => `<span class="mod">${esc(m)}</span>`).join("")}</div>
       </section>
       <section class="panel timer" aria-label="Decision timer">
         <span class="clock" id="clock"></span>
@@ -349,39 +401,45 @@ function renderRound() {
           <button class="small" id="t-add">+30 s</button>
           <button class="small" id="t-reset">Reset</button>
         </div>
-        <span class="muted">Teams decide in secret, then call out their choices.</span>
+        <span class="muted">Teams make five decisions, then call them out.</span>
       </section>
       <section class="panel" style="display:grid;gap:14px">
         <h3>Team decisions</h3>
         <div class="scroll"><table class="decide">
-          <thead><tr><th>Team</th><th><span class="p">Place</span>Booth</th><th><span class="p">Product</span>Craft</th><th><span class="p">Price</span>Level</th><th><span class="p">Price</span>Deal</th><th><span class="p">Promotion</span>Extra</th><th><span class="p">Stock</span>Units to make</th></tr></thead>
+          <thead><tr><th>Team</th><th><span class="n">1</span>Product</th><th><span class="n">2</span>Location</th><th><span class="n">3</span>Price</th><th><span class="n">4</span>Advertising</th><th><span class="n">5</span>Inventory</th><th>This round</th></tr></thead>
           <tbody>${rows}</tbody>
         </table></div>
-        <div class="actions"><button class="primary" id="open">Open the booths</button></div>
+        <div class="actions"><span class="note" id="block-msg"></span><button class="primary" id="open">Open the booths</button></div>
       </section>
     </div>
     ${guideHTML()}
   </div>`;
   app.querySelectorAll("select[data-k]").forEach(sel => sel.onchange = () => {
-    const c = S.choices[+sel.dataset.i], k = sel.dataset.k;
-    c[k] = k === "price" ? +sel.value : k === "stock" ? +sel.value : k === "deal" ? sel.value === "yes" : sel.value;
-    if (k === "prod") { document.getElementById(`c-${sel.dataset.i}-price`).innerHTML = priceOpts(c); drawStockCost(+sel.dataset.i); }
-    save();
-  });
-  app.querySelectorAll("input[data-k='stock']").forEach(inp => {
-    inp.oninput = () => {
-      const i = +inp.dataset.i, n = Math.round(+inp.value);
-      S.choices[i].stock = Number.isFinite(n) ? Math.min(STOCK_MAX, Math.max(0, n)) : 0;
-      drawStockCost(i); save();
-    };
-    inp.onblur = () => { inp.value = S.choices[+inp.dataset.i].stock; };
+    const i = +sel.dataset.i, c = S.choices[i], k = sel.dataset.k;
+    c[k] = (k === "price" || k === "units") ? +sel.value : sel.value;
+    if (k === "prod") {
+      document.getElementById(`c-${i}-price`).innerHTML = priceOpts(c);
+      document.getElementById(`c-${i}-units`).innerHTML = unitOpts(c);
+    }
+    document.getElementById(`s-${i}`).innerHTML = statusHTML(i);
+    refreshOpen(); save();
   });
   setupTimer();
+  refreshOpen();
   document.getElementById("open").onclick = () => {
-    S.results[S.round] = runRound(S.round, S.choices);
-    S.lastChoices = S.choices.map(c => ({ ...c }));
+    if (S.teams.some((t, i) => plan(i).err)) return;
+    S.before = clone(S.teams);
+    S.lastChoices = clone(S.choices);
+    S.results[S.round] = runRound();
     S.phase = "results"; render(); window.scrollTo({ top: 0 });
   };
+}
+function refreshOpen() {
+  const bad = S.teams.map((t, i) => plan(i).err ? t.name : null).filter(Boolean);
+  const btn = document.getElementById("open"), msg = document.getElementById("block-msg");
+  if (!btn) return;
+  btn.disabled = bad.length > 0;
+  msg.textContent = bad.length ? `Fix the budget for ${bad.join(", ")} first.` : "";
 }
 
 function setupTimer() {
@@ -399,87 +457,95 @@ function setupTimer() {
     draw();
   };
   document.getElementById("t-add").onclick = () => { timeLeft += 30; draw(); };
-  document.getElementById("t-reset").onclick = () => { stopTimer(); timeLeft = S.timerSec; draw(); };
+  document.getElementById("t-reset").onclick = () => { stopTimer(); timeLeft = ROUND_SECONDS; draw(); };
   draw();
 }
 function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
 
+function standings() {
+  return S.teams.map((t, i) => ({ i, cash: t.cash, stock: stockValue(t.stock), value: t.cash + stockValue(t.stock) })).sort((a, b) => b.value - a.value);
+}
 function leaderboardHTML() {
-  const tot = totals();
-  const order = S.teams.map((t, i) => i).sort((a, b) => tot[b] - tot[a]);
-  const max = Math.max(1, ...tot.map(v => Math.max(0, v)));
-  return `<div class="board">${order.map((i, r) => `
+  const st = standings();
+  const max = Math.max(1, ...st.map(s => s.value));
+  return `<div class="board">${st.map((s, r) => `
     <div class="bar-row ${r === 0 ? "lead" : ""}">
       <span class="rank">${r + 1}</span>
-      <span style="font-weight:800;min-width:0;overflow-wrap:anywhere">${esc(S.teams[i])}</span>
-      <div class="track"><div class="fill" style="width:${(Math.max(0, tot[i]) / max) * 100}%"></div></div>
-      <span class="num ${tot[i] < 0 ? "loss" : ""}">${money(tot[i])}</span>
+      <span style="font-weight:800;min-width:0;overflow-wrap:anywhere">${esc(S.teams[s.i].name)}</span>
+      <div class="track"><div class="fill" style="width:${(Math.max(0, s.value) / max) * 100}%"></div></div>
+      <span class="num">${money(s.value)}</span>
+      <span class="bar-sub">Cash ${money(s.cash)} + stock ${money(s.stock)}</span>
     </div>`).join("")}</div>`;
 }
 
 function renderResults() {
-  const res = S.results[S.round], ch = S.lastChoices || S.choices;
+  const res = S.results[S.round];
   const best = Math.max(...res.map(r => r.profit));
+  const winners = S.teams.map((t, i) => res[i].profit === best ? t.name : null).filter(Boolean);
   const rows = S.teams.map((t, i) => {
-    const r = res[i], c = ch[i];
+    const r = res[i], p = PRODS[r.prod];
     return `<tr class="${r.profit === best ? "win-row" : ""}">
-      <td class="team">${esc(t)}</td>
-      <td>${LOCS[c.loc].name}<div class="note">${PRODS[c.prod].name} · $${PRODS[c.prod].prices[c.price]}${c.deal ? " · gift set" : ""}${c.promo !== "none" ? " · " + PROMOS[c.promo].name.replace(/ \(.*\)/, "") : ""}</div></td>
-      <td class="num">${r.customers}</td>
-      <td class="num">${r.sold} / ${c.stock}</td>
+      <td class="team">${esc(t.name)}<div class="note" style="font-weight:500">${p.name} · ${money(r.price)} · ${LOCS[r.loc].name}${r.ad !== "none" ? " · " + ADS[r.ad].name.replace(/ \(.*\)/, "") : ""}</div></td>
+      <td class="num">${r.sold}</td>
       <td class="num">${money(r.revenue)}</td>
-      <td class="num">${money(r.stockCost + r.promoCost - r.buyback)}</td>
+      <td class="num">${money(r.expenses)}<div class="note">stock ${money(r.buy)} · rent ${money(r.rent)}${r.adCost ? ` · sign ${money(r.adCost)}` : ""}</div></td>
       <td class="num ${r.profit < 0 ? "loss" : "gain"}"><b>${money(r.profit)}</b></td>
-      <td class="note">${r.notes.join(". ") || "Smooth day"}</td>
+      <td><div class="why">${r.why.map(w => `<span>${esc(w)}</span>`).join("") || "<span>A normal round.</span>"}</div></td>
     </tr>`;
   }).join("");
   const last = S.round === ROUNDS - 1;
   app.innerHTML = `
-  <section class="row" style="justify-content:space-between">
-    <div><p class="label">Hour ${S.round + 1} results · ${esc(EVENTS[S.round].title)}</p><h2>The hour is up. Here’s how each booth did.</h2></div>
+  <section><p class="label">Round ${S.round + 1} results · ${esc(EVENTS[S.round].title)}</p><h2>The round is over. Here’s how each booth did.</h2></section>
+  <section class="banner" aria-label="Most profitable team">
+    <div style="display:grid;gap:4px"><span class="label">Most profitable this round</span><span class="big">${esc(winners.join(" & "))}</span></div>
+    <span class="num">${money(best)} profit</span>
   </section>
   <section class="panel"><div class="scroll"><table>
-    <thead><tr><th>Team</th><th>Booth</th><th class="num">Customers</th><th class="num">Units sold</th><th class="num">Revenue</th><th class="num">Net costs</th><th class="num">Profit</th><th>What happened</th></tr></thead>
+    <thead><tr><th>Team</th><th class="num">Items sold</th><th class="num">Revenue</th><th class="num">Expenses</th><th class="num">Profit</th><th>Why</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>
-  <p class="note" style="margin-top:12px">Net costs = stock + promotion + booth rent − half the cost of unsold units. Highlighted row = top profit this hour.</p></section>
+  <p class="note" style="margin-top:12px">Profit = revenue − expenses. Expenses = stock bought this round + booth rent + sign.</p></section>
   <section class="panel" style="display:grid;gap:16px">
-    <h3>Total profit after hour ${S.round + 1}</h3>
+    <h3>Business value after round ${S.round + 1}</h3>
+    <p class="note">Business value = cash + leftover stock at cost. This decides the winner.</p>
     ${leaderboardHTML()}
   </section>
   <div class="actions">
-    <button id="back">Change decisions</button>
-    <button class="primary" id="next">${last ? "See the winner" : `Start hour ${S.round + 2}`}</button>
+    <button id="back">Undo round and change decisions</button>
+    <button class="primary" id="next">${last ? "See the winner" : `Start round ${S.round + 2}`}</button>
   </div>`;
-  document.getElementById("back").onclick = () => { S.results.length = S.round; S.phase = "round"; timeLeft = S.timerSec; render(); };
+  document.getElementById("back").onclick = () => {
+    S.teams = clone(S.before); S.choices = clone(S.lastChoices); S.results.length = S.round;
+    S.phase = "round"; timeLeft = ROUND_SECONDS; render();
+  };
   document.getElementById("next").onclick = () => {
-    if (last) { S.phase = "final"; }
-    else { S.round += 1; S.choices = (S.lastChoices || S.choices).map(c => ({ ...c })); S.phase = "round"; timeLeft = S.timerSec; }
+    if (last) S.phase = "final";
+    else { S.round += 1; S.choices = clone(S.lastChoices); S.phase = "round"; timeLeft = ROUND_SECONDS; }
     render(); window.scrollTo({ top: 0 });
   };
 }
 
 function renderFinal() {
-  const tot = totals();
-  const order = S.teams.map((t, i) => i).sort((a, b) => tot[b] - tot[a]);
-  const places = order.slice(0, 3).map((i, r) => `
+  const st = standings();
+  const places = st.slice(0, 3).map((s, r) => `
     <div class="place ${r === 0 ? "first" : ""}">
       <span class="label">${["Winner · campus tour", "Second", "Third"][r]}</span>
-      <span class="big">${esc(S.teams[i])}</span>
-      <span class="num" style="text-align:left;font-size:20px">${money(tot[i])}</span>
+      <span class="big">${esc(S.teams[s.i].name)}</span>
+      <span class="num" style="text-align:left;font-size:20px">${money(s.value)}</span>
+      <span class="note" style="color:inherit;opacity:.8">Cash ${money(s.cash)} + stock ${money(s.stock)}</span>
     </div>`).join("");
   app.innerHTML = `
-  <section style="display:grid;gap:8px"><p class="label">Final standings</p><h2>${esc(S.teams[order[0]])} ran the best craft booth</h2>
-    <p class="muted">They tour the campus and choose their selling spot first. Other teams choose in this order.</p></section>
+  <section style="display:grid;gap:8px"><p class="label">Final standings</p><h2>${esc(S.teams[st[0].i].name)} built the most valuable business</h2>
+    <p class="muted">They started with ${money(START_CASH)} and finished with ${money(st[0].value)}. They tour the campus and choose their selling spot first. Other teams choose in this order.</p></section>
   <section class="podium">${places}</section>
-  <section class="panel" style="display:grid;gap:16px"><h3>Total profit, all ${ROUNDS} hours</h3>${leaderboardHTML()}</section>
+  <section class="panel" style="display:grid;gap:16px"><h3>Final business value</h3>${leaderboardHTML()}</section>
   <section class="panel" style="display:grid;gap:10px">
     <h3>Talk about it (2 minutes)</h3>
-    <p>Which decision made the biggest difference: Place, Product, Price or Promotion?</p>
-    <p>Was the busiest booth worth its rent? When did making too much stock cost you?</p>
+    <p>Which decision made the biggest difference: product, location, price, advertising or inventory?</p>
+    <p>When did buying too much or too little stock hurt you?</p>
     <p>What will you do differently at your real table at noon?</p>
   </section>
-  <div class="actions confirm" id="reset-area"></div>`;
+  <div class="actions" id="reset-area"></div>`;
   drawReset();
 }
 function drawReset() {
@@ -490,13 +556,14 @@ function drawReset() {
     : `<button id="r-ask">New game</button>`;
   if (confirmReset) {
     document.getElementById("r-no").onclick = () => { confirmReset = false; drawReset(); };
-    document.getElementById("r-yes").onclick = () => { confirmReset = false; const names = S.names; S = fresh(); S.names = names; render(); };
+    document.getElementById("r-yes").onclick = () => { confirmReset = false; const names = S.names, count = S.teamCount; S = fresh(); S.names = names; S.teamCount = count; render(); };
   } else document.getElementById("r-ask").onclick = () => { confirmReset = true; drawReset(); };
 }
 
 function start(data) {
-  const saved = load(); S = (data && data.v === 2) ? data : (saved && saved.v === 2 ? saved : fresh());
-  timeLeft = S.timerSec || 180;
+  const saved = load();
+  S = (data && data.v === VERSION) ? data : (saved && saved.v === VERSION ? saved : fresh());
+  timeLeft = ROUND_SECONDS;
   render();
 }
 start(null);
